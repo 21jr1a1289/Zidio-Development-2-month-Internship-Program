@@ -1,0 +1,2 @@
+# Zidio-Development-2-month-Internship-Program
+JOB PORTAL PROJECT BASED ON JAVA FULL STACK DEVELOPMENT

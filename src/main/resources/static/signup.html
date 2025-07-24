@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Signup - Job Portal</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f9f9f9; }
+        .container {
+            max-width: 400px; margin: 50px auto; padding: 20px;
+            background: white; border-radius: 8px; box-shadow: 0 0 10px #ccc;
+        }
+        input, select, button {
+            width: 100%; padding: 10px; margin: 8px 0; border-radius: 5px; border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        button { background-color: #2196F3; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0b7dda; }
+        #message { color: red; font-weight: bold; margin-bottom: 12px; text-align: center; }
+        .link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+        .link a {
+            color: #2196F3;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Create Account</h2>
+    <div id="message"></div>
+    <form id="signupForm">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="text" id="fullName" placeholder="Full Name" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <select id="role" required>
+            <option value="" disabled selected>Select Role</option>
+            <option value="USER">User</option>
+            <option value="ADMIN">Admin</option>
+        </select>
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <div class="link">
+        Already have an account? <a href="login.html">Login</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const fullName = document.getElementById('fullName').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const role = document.getElementById('role').value;
+
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = '';
+
+        const payload = { username, email, fullName, password, role };
+
+        try {
+            const response = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                messageDiv.style.color = 'green';
+                messageDiv.textContent = data.message || 'Registered successfully!';
+
+                // ✅ Save userId for profile use
+                localStorage.setItem('userId', data.userId); // ✅ FIXED
+
+                // Redirect based on role
+                if (data.role === 'ADMIN') {
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    window.location.href = 'user-dashboard.html';
+                }
+            } else {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = data.error || 'Registration failed.';
+            }
+        } catch (error) {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = 'Server error. Please try again later.';
+            console.error('Signup error:', error);
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Manage Jobs - Admin</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    form,
+    table {
+      margin-top: 20px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .success {
+      color: green;
+      margin-top: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f1f1;
+    }
+
+    .delete-btn {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: darkred;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Post a New Job</h2>
+
+  <form th:action="@{/admin/jobs}" method="post">
+    <label>Title: <input type="text" name="title" required /></label>
+    <label>Company: <input type="text" name="company" required /></label>
+    <label>Location: <input type="text" name="location" required /></label>
+    <label>Type: <input type="text" name="type" required /></label>
+    <label>Salary: <input type="number" name="salary" required /></label>
+    <label>Description: <textarea name="description" required></textarea></label>
+    <button type="submit">Post Job</button>
+  </form>
+
+  <h2>Existing Jobs</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Company</th>
+        <th>Location</th>
+        <th>Type</th>
+        <th>Salary</th>
+        <th>Date Posted</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="job : ${jobs}" th:id="'job-row-' + ${job.id}">
+  <td th:text="${job.title}">Title</td>
+  <td th:text="${job.company}">Company</td>
+  <td th:text="${job.location}">Location</td>
+  <td th:text="${job.type}">Type</td>
+  <td th:text="${job.salary}">Salary</td>
+  <td th:text="${#temporals.format(job.datePosted, 'yyyy-MM-dd')}">Date Posted</td>
+  <td th:text="${job.description}">Description</td>
+  <td>
+    <button class="delete-btn" type="button"
+      th:onclick="'deleteJob(' + ${job.id} + ')'">Delete</button>
+  </td>
+</tr>
+      
+    </tbody>
+  </table>
+
+  <script>
+    function deleteJob(jobId) {
+      fetch(`/admin/jobs/delete/${jobId}`, {
+        method: "POST",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest"
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          const row = document.getElementById(`job-row-${jobId}`);
+          if (row) {
+            row.remove();
+          }
+        } else {
+          console.error("Failed to delete job.");
+        }
+      })
+      .catch(error => {
+        console.error("Error deleting job:", error);
+      });
+    }
+  </script>
+
+</body>
+
+</html>

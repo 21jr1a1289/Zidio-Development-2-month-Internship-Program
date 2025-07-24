@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Post New Job - Admin</title>
+</head>
+<body>
+    <h2>Post a New Job</h2>
+    <form id="jobPostForm">
+        <label>
+            Job Title:<br />
+            <input type="text" id="title" required />
+        </label><br /><br />
+
+        <label>
+            Company:<br />
+            <input type="text" id="company" required />
+        </label><br /><br />
+
+        <label>
+            Location:<br />
+            <input type="text" id="location" required />
+        </label><br /><br />
+
+        <label>
+            Job Type:<br />
+            <input type="text" id="type" placeholder="Full-time / Part-time" />
+        </label><br /><br />
+
+        <label>
+            Salary:<br />
+            <input type="number" id="salary" />
+        </label><br /><br />
+
+        <label>
+            Description:<br />
+            <textarea id="description" rows="5" cols="40"></textarea>
+        </label><br /><br />
+
+        <button type="submit">Post Job</button>
+    </form>
+
+    <p id="responseMessage"></p>
+
+    <script>
+      document.getElementById("jobPostForm").addEventListener("submit", function(event) {
+          event.preventDefault();
+
+          const jobData = {
+              title: document.getElementById("title").value,
+              company: document.getElementById("company").value,
+              location: document.getElementById("location").value,
+              type: document.getElementById("type").value,
+              salary: parseFloat(document.getElementById("salary").value) || 0,
+              description: document.getElementById("description").value
+          };
+
+          fetch("/api/jobs?role=ADMIN", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(jobData)
+          })
+          .then(response => response.json())
+          .then(data => {
+              document.getElementById("responseMessage").textContent = "Job posted successfully!";
+              this.reset();
+          })
+          .catch(error => {
+              document.getElementById("responseMessage").textContent = "Error posting job.";
+              console.error("Error:", error);
+          });
+      });
+    </script>
+</body>
+</html>

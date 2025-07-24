@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Update Job - Admin</title>
+</head>
+<body>
+    <h2>Update Job</h2>
+
+    <label>
+        Job ID:<br />
+        <input type="number" id="jobId" required />
+    </label>
+    <button onclick="loadJob()">Load Job</button>
+    <br /><br />
+
+    <form id="jobUpdateForm" style="display:none;">
+        <label>
+            Job Title:<br />
+            <input type="text" id="title" required />
+        </label><br /><br />
+
+        <label>
+            Company:<br />
+            <input type="text" id="company" required />
+        </label><br /><br />
+
+        <label>
+            Location:<br />
+            <input type="text" id="location" required />
+        </label><br /><br />
+
+        <label>
+            Job Type:<br />
+            <input type="text" id="type" />
+        </label><br /><br />
+
+        <label>
+            Salary:<br />
+            <input type="number" id="salary" />
+        </label><br /><br />
+
+        <label>
+            Description:<br />
+            <textarea id="description" rows="5" cols="40"></textarea>
+        </label><br /><br />
+
+        <button type="submit">Update Job</button>
+    </form>
+
+    <p id="responseMessage"></p>
+
+    <script>
+      function loadJob() {
+          const jobId = document.getElementById("jobId").value;
+          if (!jobId) {
+              alert("Please enter Job ID");
+              return;
+          }
+
+          fetch(`/api/jobs/${jobId}`)
+              .then(response => {
+                  if (!response.ok) throw new Error("Job not found");
+                  return response.json();
+              })
+              .then(job => {
+                  document.getElementById("title").value = job.title || "";
+                  document.getElementById("company").value = job.company || "";
+                  document.getElementById("location").value = job.location || "";
+                  document.getElementById("type").value = job.type || "";
+                  document.getElementById("salary").value = job.salary || "";
+                  document.getElementById("description").value = job.description || "";
+
+                  document.getElementById("jobUpdateForm").style.display = "block";
+                  document.getElementById("responseMessage").textContent = "";
+              })
+              .catch(err => {
+                  document.getElementById("responseMessage").textContent = "Job not found";
+                  document.getElementById("jobUpdateForm").style.display = "none";
+              });
+      }
+
+      document.getElementById("jobUpdateForm").addEventListener("submit", function(event) {
+          event.preventDefault();
+
+          const jobId = document.getElementById("jobId").value;
+
+          const jobData = {
+              title: document.getElementById("title").value,
+              company: document.getElementById("company").value,
+              location: document.getElementById("location").value,
+              type: document.getElementById("type").value,
+              salary: parseFloat(document.getElementById("salary").value) || 0,
+              description: document.getElementById("description").value
+          };
+
+          fetch(`/api/jobs/${jobId}?role=ADMIN`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(jobData)
+          })
+          .then(response => {
+              if (!response.ok) throw new Error("Failed to update");
+              return response.json();
+          })
+          .then(data => {
+              document.getElementById("responseMessage").textContent = "Job updated successfully!";
+          })
+          .catch(error => {
+              document.getElementById("responseMessage").textContent = "Error updating job.";
+              console.error("Error:", error);
+          });
+      });
+    </script>
+</body>
+</html>

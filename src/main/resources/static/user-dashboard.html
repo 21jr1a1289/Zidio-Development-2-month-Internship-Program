@@ -1,0 +1,443 @@
+<!DOCTYPE html>  
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Dashboard - WorkPlace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .header {
+      background: #fff;
+      padding: 20px 40px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content:space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 600;
+      color: #28a745;
+    }
+    .nav-links a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+    .hero {
+      background-color: #1f2e3c;
+      color: white;
+      padding: 80px 20px;
+      text-align: center;
+    }
+    .hero h1 { font-size: 36px; }
+    .search-bar {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .search-bar input, .search-bar select {
+      padding: 10px;
+      width: 250px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .search-bar button {
+      padding: 10px 30px;
+      background-color: #28a745;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .tabs {
+      margin: 40px auto 20px;
+      text-align: center;
+    }
+    .tabs button {
+      background-color: #e9ecef;
+      border: none;
+      padding: 10px 20px;
+      margin: 0 5px;
+      font-weight: 600;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .tabs button.active {
+      background-color: #28a745;
+      color: white;
+    }
+    .job-cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 0 20px 40px;
+    }
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .card h3 { margin: 0 0 10px; color: #333; }
+    .card p { margin: 4px 0; font-size: 14px; color: #555; }
+    .card .salary { color: #28a745; font-weight: bold; }
+    .card-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .card-buttons button {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 5px;
+      background-color: #28a745;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      flex: 1;
+    }
+    
+    .card-buttons button.saved-button {
+  background-color: #6c757d;
+  cursor: pointer; /* change from not-allowed to pointer */
+}
+    
+    
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+    }
+    .modal-content input, .modal-content input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .modal-content button {
+      padding: 10px 20px;
+      background-color: #28a745;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .modal-content .close {
+      background-color: #dc3545;
+    }
+    #successMessage {
+      margin-top: 10px;
+      display: none;
+    }
+    #loginAlert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #ffc107;
+      color: #333;
+      padding: 15px 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      display: none;
+      z-index: 1100;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="logo">Work<span style="color:#000;">Place</span></div>
+  <div class="nav-links" id="navLinks">
+  <!-- Filled dynamically, but fallback shown -->
+  <a href="userprofile.html" id="profileLink" style="display:none;">Profile</a>
+  
+  
+</div>
+  
+</div>
+
+<div class="hero">
+  <h1>Place Where Opportunities are Found</h1>
+  <div class="search-bar">
+    <input type="text" placeholder="Keywords" id="searchKeyword" />
+    <select id="searchLocation">
+      <option value="">All Regions</option>
+      <option value="Bangalore">Bangalore</option>
+      <option value="Hyderabad">Hyderabad</option>
+      <option value="Chennai">Chennai</option>
+      <option value="Pune">Pune</option>
+    </select>
+    <button onclick="searchJobs()">Search</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="active" onclick="showTab('all', event)">All Jobs</button>
+  <button onclick="showTab('saved', event)">Saved Jobs</button>
+  <button onclick="showTab('applied', event)">Applied Jobs</button>
+</div>
+
+<div class="job-cards" id="all"></div>
+<div class="job-cards" id="saved" style="display:none;"></div>
+<div class="job-cards" id="applied" style="display:none;"></div>
+
+<!-- Modal -->
+<div class="modal" id="applyModal">
+  <div class="modal-content">
+    <h3>Apply for Job</h3>
+    <input type="text" id="applicantName" placeholder="Your Name" />
+    <input type="email" id="applicantEmail" placeholder="Your Email" />
+    <input type="file" id="resumeFile" />
+    <input type="hidden" id="modalJobId" />
+    <button onclick="submitApplication()">Submit Application</button>
+    <button class="close" onclick="closeModal()">Cancel</button>
+    <p id="successMessage">Application submitted successfully!</p>
+  </div>
+</div>
+
+<!-- Login Alert -->
+<div id="loginAlert">Please sign up first or login to your account.</div>
+
+<script>
+  const navLinks = document.getElementById('navLinks');
+  const username = sessionStorage.getItem('username');
+  const role = sessionStorage.getItem('role');
+
+ if (username && role) {
+  navLinks.innerHTML = `
+    <a href="userprofile.html">👤 ${username}</a>
+    <a href="#" onclick="logout()">Logout</a>
+  `; 
+  } else {
+    navLinks.innerHTML = `
+      <a href="login.html">Login</a>
+      <a href="signup.html">Sign Up</a>
+    `;
+  }
+
+  function logout() {
+    sessionStorage.clear();
+    window.location.href = 'login.html';
+  }
+
+  const savedJobs = JSON.parse(localStorage.getItem("savedJobs") || "[]");
+  const appliedJobs = JSON.parse(localStorage.getItem("appliedJobs") || "[]");
+
+  const jobs = [
+  { id: 1, title: "Frontend Developer", company: "Google", location: "Bangalore", type: "Full-time", salary: "22,00,000", description: "Work on scalable UI for global products." },
+  { id: 2, title: "Backend Engineer", company: "Amazon", location: "Hyderabad", type: "Full-time", salary: "20,00,000", description: "Build REST APIs and cloud services." },
+  { id: 3, title: "Data Analyst", company: "TCS", location: "Chennai", type: "Contract", salary: "12,00,000", description: "Analyze client data for insights." },
+  { id: 4, title: "DevOps Engineer", company: "Infosys", location: "Pune", type: "Full-time", salary: "18,00,000", description: "Manage CI/CD pipelines and cloud infrastructure." },
+  { id: 5, title: "Full Stack Developer", company: "Zoho", location: "Chennai", type: "Full-time", salary: "15,00,000", description: "Build both frontend and backend systems." },
+  { id: 6, title: "Cloud Architect", company: "Microsoft", location: "Hyderabad", type: "Full-time", salary: "28,00,000", description: "Design scalable cloud-based systems." },
+  { id: 7, title: "Mobile App Developer", company: "Flipkart", location: "Bangalore", type: "Full-time", salary: "16,00,000", description: "Develop Android and iOS mobile apps." },
+  { id: 8, title: "Cybersecurity Analyst", company: "Wipro", location: "Pune", type: "Contract", salary: "14,00,000", description: "Monitor and secure corporate IT infrastructure." },
+  { id: 9, title: "AI/ML Engineer", company: "NVIDIA", location: "Bangalore", type: "Full-time", salary: "30,00,000", description: "Develop AI models for real-time applications." },
+  { id: 10, title: "UI/UX Designer", company: "Freshworks", location: "Chennai", type: "Part-time", salary: "10,00,000", description: "Design intuitive and beautiful user interfaces." },
+  { id: 11, title: "QA Tester", company: "Cognizant", location: "Hyderabad", type: "Full-time", salary: "11,00,000", description: "Test and ensure software quality." },
+  { id: 12, title: "Business Analyst", company: "HCL", location: "Pune", type: "Full-time", salary: "13,00,000", description: "Bridge business needs with technical solutions." },
+  { id: 13, title: "System Administrator", company: "Capgemini", location: "Bangalore", type: "Contract", salary: "12,00,000", description: "Manage internal IT infrastructure and support." },
+  { id: 14, title: "Product Manager", company: "Swiggy", location: "Bangalore", type: "Full-time", salary: "24,00,000", description: "Lead the product development lifecycle." },
+  { id: 15, title: "Technical Support", company: "Tech Mahindra", location: "Chennai", type: "Full-time", salary: "9,00,000", description: "Provide technical support for clients." },
+  { id: 16, title: "Software Engineer Intern", company: "Paytm", location: "Hyderabad", type: "Internship", salary: "4,00,000", description: "Assist in software development tasks." },
+  { id: 17, title: "Network Engineer", company: "Cisco", location: "Pune", type: "Full-time", salary: "18,00,000", description: "Configure and manage network systems." },
+  { id: 18, title: "Technical Writer", company: "Adobe", location: "Bangalore", type: "Remote", salary: "13,00,000", description: "Write documentation for developers and users." },
+  { id: 19, title: "Data Engineer", company: "LinkedIn", location: "Hyderabad", type: "Full-time", salary: "22,00,000", description: "Build and manage data pipelines." },
+  { id: 20, title: "Automation Engineer", company: "Siemens", location: "Chennai", type: "Full-time", salary: "17,00,000", description: "Automate industrial and software systems." }
+];
+  
+
+  function renderJobs(containerId, jobList) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    if (jobList.length === 0) {
+      container.innerHTML = "<p>No jobs found.</p>";
+      return;
+    }
+
+    jobList.forEach(job => {
+      const isSaved = savedJobs.includes(job.id);
+      const isApplied = appliedJobs.includes(job.id);
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <h3>${job.title}</h3>
+        <p><strong>Company:</strong> ${job.company}</p>
+        <p><strong>Location:</strong> ${job.location}</p>
+        <p><strong>Type:</strong> ${job.type}</p>
+        <p class="salary">₹${job.salary}</p>
+        <p>${job.description}</p>
+        <div class="card-buttons">
+          <button onclick="saveJob(${job.id})" class="${isSaved ? 'saved-button' : ''}">${isSaved ? "Unsave" : "Save"}</button>
+          
+          <button onclick="applyJob(${job.id})" ${isApplied ? "disabled" : ""}>${isApplied ? "Applied" : "Apply"}</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  function showTab(tabId, event) {
+    document.querySelectorAll('.job-cards').forEach(div => div.style.display = 'none');
+    document.getElementById(tabId).style.display = 'flex';
+
+    document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    if (tabId === 'all') {
+      renderJobs('all', jobs);
+    } else if (tabId === 'saved') {
+      const filtered = jobs.filter(job => savedJobs.includes(job.id));
+      renderJobs('saved', filtered);
+    } else if (tabId === 'applied') {
+      const filtered = jobs.filter(job => appliedJobs.includes(job.id));
+      renderJobs('applied', filtered);
+    }
+  }
+
+  function saveJob(jobId) {
+  if (!username) {
+    showLoginAlert();
+    return;
+  }
+
+  const index = savedJobs.indexOf(jobId);
+  if (index !== -1) {
+    // Job is already saved; remove it
+    savedJobs.splice(index, 1);
+  } else {
+    // Save the job
+    savedJobs.push(jobId);
+  }
+
+  localStorage.setItem("savedJobs", JSON.stringify(savedJobs));
+
+  // Refresh UI
+  renderJobs('all', jobs);
+  renderJobs('saved', jobs.filter(job => savedJobs.includes(job.id)));
+}
+  
+
+  function applyJob(jobId) {
+    if (!username) {
+      showLoginAlert();
+      return;
+    }
+    openModal(jobId);
+  }
+
+  function showLoginAlert() {
+    const alertDiv = document.getElementById('loginAlert');
+    alertDiv.style.display = 'block';
+    setTimeout(() => {
+      alertDiv.style.display = 'none';
+    }, 3500);
+  }
+
+  // Modal control
+  const modal = document.getElementById('applyModal');
+  const successMessage = document.getElementById('successMessage');
+
+  function openModal(jobId) {
+    document.getElementById('modalJobId').value = jobId;
+    document.getElementById('applicantName').value = username || "";
+    document.getElementById('applicantEmail').value = "";
+    document.getElementById('resumeFile').value = "";
+    successMessage.style.display = 'none';
+    modal.style.display = 'block';
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+  }
+
+  function submitApplication() {
+    const name = document.getElementById('applicantName').value.trim();
+    const email = document.getElementById('applicantEmail').value.trim();
+    const resume = document.getElementById('resumeFile').files[0];
+    const jobId = parseInt(document.getElementById('modalJobId').value);
+
+    if (!name || !email || !resume) {
+      alert("Please fill all fields and upload your resume.");
+      return;
+    }
+
+    // Save applied job id
+    if (!appliedJobs.includes(jobId)) {
+      appliedJobs.push(jobId);
+      localStorage.setItem("appliedJobs", JSON.stringify(appliedJobs));
+    }
+
+    successMessage.style.display = "block";
+
+    // Disable Apply button on the job card
+    renderJobs('all', jobs);
+    renderJobs('applied', jobs.filter(job => appliedJobs.includes(job.id)));
+
+    setTimeout(() => {
+      closeModal();
+      showTab('applied', new Event('click'));
+    }, 2000);
+  }
+
+  function searchJobs() {
+    const keyword = document.getElementById('searchKeyword').value.toLowerCase();
+    const location = document.getElementById('searchLocation').value.toLowerCase();
+
+    let filteredJobs = jobs.filter(job => {
+      const matchesKeyword = job.title.toLowerCase().includes(keyword) || job.company.toLowerCase().includes(keyword);
+      const matchesLocation = location === "" || job.location.toLowerCase() === location;
+      return matchesKeyword && matchesLocation;
+    });
+
+    renderJobs('all', filteredJobs);
+    showTab('all', new Event('click'));
+  }
+
+  // Initialize
+  // Initialize jobs automatically without tab click
+renderJobs('all', jobs);
+  
+
+  // Close modal when clicking outside content
+  window.onclick = function(event) {
+    if (event.target === modal) {
+      closeModal();
+    }
+  };
+</script>
+
+</body>
+</html>

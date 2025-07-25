@@ -102,9 +102,9 @@
 
                 // Redirect based on role
                 if (role === 'ADMIN') {
-                    window.location.href = 'admin-dashboard.html';
+                    window.location.href = '/admin/dashboard';
                 } else if (role === 'USER') {
-                    window.location.href = 'user-dashboard.html';
+                    window.location.href = '/user-dashboard.html';
                 } else {
                     messageDiv.textContent = 'Unknown user role.';
                 }

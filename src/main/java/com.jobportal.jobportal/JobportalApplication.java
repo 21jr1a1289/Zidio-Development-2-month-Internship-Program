@@ -14,7 +14,7 @@ public class JobportalApplication {
 
         // Automatically open the browser to /jobs
         try {
-            String url = "http://localhost:8076/signup.html";
+            String url = "http://localhost:8090/user-dashboard.html";
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().browse(new URI(url));
             } else {
